@@ -29,7 +29,7 @@ export default function BookAdd() {
 
           <div className="control">
             <button
-              className="button is-info"
+              className="button is-primary"
               type="submit"
               onClick={handleClick}
             >
