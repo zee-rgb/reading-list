@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { Book } from "../types/booktypes";
 
 type BookContextType = {
@@ -17,9 +17,61 @@ type BookProviderProps = {
   readonly children: ReactNode;
 };
 
+// Constants for localStorage keys
+const BOOKS_STORAGE_KEY = "reading-list-books";
+const NEXT_ID_STORAGE_KEY = "reading-list-next-id";
+
+// Helper functions for localStorage
+const loadBooksFromStorage = (): Book[] => {
+  try {
+    const stored = localStorage.getItem(BOOKS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error("Failed to load books from localStorage:", error);
+    return [];
+  }
+};
+
+const loadNextIdFromStorage = (): number => {
+  try {
+    const stored = localStorage.getItem(NEXT_ID_STORAGE_KEY);
+    return stored ? Number.parseInt(stored, 10) : 1;
+  } catch (error) {
+    console.error("Failed to load nextId from localStorage:", error);
+    return 1;
+  }
+};
+
+const saveBooksToStorage = (books: Book[]): void => {
+  try {
+    localStorage.setItem(BOOKS_STORAGE_KEY, JSON.stringify(books));
+  } catch (error) {
+    console.error("Failed to save books to localStorage:", error);
+  }
+};
+
+const saveNextIdToStorage = (nextId: number): void => {
+  try {
+    localStorage.setItem(NEXT_ID_STORAGE_KEY, nextId.toString());
+  } catch (error) {
+    console.error("Failed to save nextId to localStorage:", error);
+  }
+};
+
 export function BookProvider({ children }: BookProviderProps) {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [nextId, setNextId] = useState(1);
+  // Initialize state from localStorage
+  const [books, setBooks] = useState<Book[]>(() => loadBooksFromStorage());
+  const [nextId, setNextId] = useState<number>(() => loadNextIdFromStorage());
+
+  // Sync books to localStorage whenever books change
+  useEffect(() => {
+    saveBooksToStorage(books);
+  }, [books]);
+
+  // Sync nextId to localStorage whenever nextId changes
+  useEffect(() => {
+    saveNextIdToStorage(nextId);
+  }, [nextId]);
 
   const addBook = (title: string) => {
     if (!title.trim()) return;
@@ -27,20 +79,21 @@ export function BookProvider({ children }: BookProviderProps) {
       id: nextId,
       title: title.trim(),
     };
-    setBooks([...books, newBook]);
+    const updatedBooks = [...books, newBook];
+    setBooks(updatedBooks);
     setNextId(nextId + 1);
   };
 
   const updateBook = (id: number, newTitle: string) => {
-    setBooks(
-      books.map((book) =>
-        book.id === id ? { ...book, title: newTitle.trim() } : book
-      )
+    const updatedBooks = books.map((book) =>
+      book.id === id ? { ...book, title: newTitle.trim() } : book
     );
+    setBooks(updatedBooks);
   };
 
   const deleteBook = (id: number) => {
-    setBooks(books.filter((book) => book.id !== id));
+    const updatedBooks = books.filter((book) => book.id !== id);
+    setBooks(updatedBooks);
   };
 
   return (
