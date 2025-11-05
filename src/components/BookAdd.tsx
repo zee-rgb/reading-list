@@ -24,6 +24,7 @@ export default function BookAdd() {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              style={{ minWidth: "300px" }}
             />
           </div>
 
