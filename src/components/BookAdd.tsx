@@ -6,7 +6,7 @@ export default function BookAdd() {
   const [inputValue, setInputValue] = useState("");
   const { addBook } = useBooks();
 
-  const handleClick = (e: React.MouseEvent<Element, MouseEvent>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
     addBook(inputValue);
@@ -15,7 +15,7 @@ export default function BookAdd() {
 
   return (
     <div className="container has-text-centered">
-      <form className="has-text-centered mb-5">
+      <form className="has-text-centered mb-5" onSubmit={handleSubmit}>
         <div className="field has-addons is-justify-content-center">
           <div className="control">
             <input
@@ -28,11 +28,7 @@ export default function BookAdd() {
           </div>
 
           <div className="control">
-            <button
-              className="button is-primary"
-              type="submit"
-              onClick={handleClick}
-            >
+            <button className="button is-primary" type="submit">
               Add Book
             </button>
           </div>

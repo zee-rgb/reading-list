@@ -17,7 +17,7 @@ export default function EditButton({ book }: EditButtonProps) {
     setBookTitle(book.title);
   };
 
-  const handleSave = (e: React.MouseEvent<Element, MouseEvent>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateBook(book.id, bookTitle);
     setIsEditing(false);
@@ -30,7 +30,7 @@ export default function EditButton({ book }: EditButtonProps) {
 
   if (isEditing) {
     return (
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="field">
           <div className="control">
             <input
@@ -38,6 +38,9 @@ export default function EditButton({ book }: EditButtonProps) {
               type="text"
               value={bookTitle}
               onChange={(e) => setBookTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && handleCancel()}
+              placeholder="Edit book title..."
+              autoFocus
             />
           </div>
         </div>
@@ -45,7 +48,7 @@ export default function EditButton({ book }: EditButtonProps) {
           <button
             className="button is-small is-success"
             style={{ minWidth: "40px" }}
-            onClick={handleSave}
+            type="submit"
           >
             Save
           </button>
