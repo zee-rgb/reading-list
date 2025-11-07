@@ -39,7 +39,7 @@ export default function EditButton({ book }: EditButtonProps) {
               value={bookTitle}
               onChange={(e) => setBookTitle(e.target.value)}
               onKeyDown={(e) => e.key === "Escape" && handleCancel()}
-              placeholder="Edit book title..."
+              placeholder={book.title}
               autoFocus
             />
           </div>
